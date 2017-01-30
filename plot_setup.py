@@ -5,6 +5,10 @@ Set up plot with correct options for publication in journal
 import numpy as np 
 import matplotlib as mpl 
 
+"""
+Set up for a MNRAS paper
+"""
+
 def figsize(hscale, 
             vscale=(np.sqrt(5.0)-1.0)/2.0,
             fig_width_pt = 504.0):
@@ -45,5 +49,8 @@ def set_plot_properties():
             r"\usepackage[T1]{fontenc}",     # plots will be generated using this preamble
             ]
         }
-    
+        
     mpl.rcParams.update(pgf_with_latex)
+
+    
+
