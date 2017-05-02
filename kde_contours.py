@@ -7,7 +7,10 @@ def kde_contours(m1,
                  kwargs_contour={},
                  kwargs_plot={},
                  color='black',
-                 lims=None):
+                 lims=None,
+                 plotpoints=True,
+                 image=False,
+                 filled=False):
 
     """
     Plot contours using gaussian KDE
@@ -18,7 +21,6 @@ def kde_contours(m1,
 
     To do: Implement scikit-learn KDE
     """
-
     if lims is None:
 
         xmin = m1.min()
@@ -30,34 +32,57 @@ def kde_contours(m1,
 
         xmin, xmax, ymin, ymax = lims  
 
+
     X, Y = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
     positions = np.vstack([X.ravel(), Y.ravel()])
     values = np.vstack([m1, m2])
     kernel = stats.gaussian_kde(values)
     Z = np.reshape(kernel(positions).T, X.shape)
-    
+
+
     CS = ax.contour(X, 
                     Y, 
                     Z, 
                     colors=(color,),
                     **kwargs_contour)
+
+    if filled: 
+
+        ax.contourf(X, 
+                    Y, 
+                    Z, 
+                    cmap='Blues',
+                    zorder=0,
+                    levels=np.append(CS.levels, Z.max()),
+                    **kwargs_contour)
+
+    if image:
+
+        ax.imshow(np.flipud(Z.T), 
+                  extent=(xmin, xmax, ymin, ymax), 
+                  aspect='auto', 
+                  zorder=0, 
+                  cmap='Blues')
+
     
-    threshold = CS.levels[0]
+    if plotpoints: 
+
+        threshold = CS.levels[0]
     
-    z = kernel(values)
-    
-    # mask points above density threshold
-    x = np.ma.masked_where(z > threshold, m1)
-    y = np.ma.masked_where(z > threshold, m2)
-    
-    # plot unmasked points
-    ax.plot(x, 
-            y, 
-            markerfacecolor=color, 
-            markeredgecolor='None', 
-            linestyle='', 
-            marker='o', 
-            markersize=2,
-            **kwargs_plot)
+        z = kernel(values)
+        
+        # mask points above density threshold
+        x = np.ma.masked_where(z > threshold, m1)
+        y = np.ma.masked_where(z > threshold, m2)
+        
+        # plot unmasked points
+        ax.plot(x, 
+                y, 
+                markerfacecolor=color, 
+                markeredgecolor='None', 
+                linestyle='', 
+                marker='o', 
+                markersize=2,
+                **kwargs_plot)
 
     return None 

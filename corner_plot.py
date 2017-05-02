@@ -1,3 +1,20 @@
+from matplotlib.ticker import MaxNLocator, FuncFormatter
+import matplotlib.pyplot as plt 
+import matplotlib.gridspec as gridspec
+import numpy as np 
+import matplotlib.colors as colors
+import matplotlib.cm as cm
+
+def my_formatter(x, pos):
+    """Format 1 as 1, 0 as 0, and all values whose absolute values is between
+    0 and 1 without the leading "0." (e.g., 0.7 is formatted as .7 and -0.4 is
+    formatted as -.4)."""
+    val_str = '${:g}$'.format(x)
+    if np.abs(x) > 0 and np.abs(x) < 1:
+        return val_str.replace("0", "", 1)
+    else:
+        return val_str
+
 def corner_plot(chain, 
                 axis_labels=None, 
                 fname = None, 
@@ -20,8 +37,6 @@ def corner_plot(chain,
     """
     Make a corner plot to show histograms / correlations
     """
-
-   
 
     major_formatter = FuncFormatter(my_formatter)
         
@@ -117,6 +132,7 @@ def corner_plot(chain,
     hist_1d_axes[n_traces - 1].xaxis.set_major_locator(MaxNLocator(nticks))
     hist_1d_axes[n_traces - 1].yaxis.set_visible(False)
     plt.setp(hist_1d_axes[n_traces - 1].xaxis.get_majorticklabels(), rotation=45)
+    hist_1d_axes[n_traces - 1].xaxis.set_label_coords(0.5, -0.3)
   
     #Now Make the 2D histograms
     for x_var in xrange( n_traces ):
@@ -162,14 +178,16 @@ def corner_plot(chain,
         hist_2d_axes[(x_var, n_traces-1)].tick_params(labelsize=tickfontsize)
         hist_2d_axes[(x_var, n_traces-1)].xaxis.set_major_locator(MaxNLocator(nticks))
         plt.setp(hist_2d_axes[(x_var, n_traces-1)].xaxis.get_majorticklabels(), rotation=45)
+        hist_2d_axes[(x_var, n_traces-1)].xaxis.set_label_coords(0.5, -0.3)
     for y_var in xrange(1, n_traces ):
-        hist_2d_axes[(0,y_var)].set_ylabel(axis_labels[y_var],fontsize=fontsize)
+        hist_2d_axes[(0,y_var)].set_ylabel(axis_labels[y_var],fontsize=fontsize )
         hist_2d_axes[(0,y_var)].tick_params(labelsize=tickfontsize)
         plt.setp(hist_2d_axes[(0,y_var)].yaxis.get_majorticklabels(), rotation=45)
         hist_2d_axes[(0,y_var)].yaxis.set_major_locator(MaxNLocator(nticks))
+        hist_2d_axes[(0,y_var)].yaxis.set_label_coords(-0.25, 0.5)
 
-    hist_2d_axes[(1, 2)].xaxis.labelpad = 15
-    hist_2d_axes[(0, 1)].yaxis.labelpad = 12
+    # hist_2d_axes[(1, 2)].xaxis.labelpad = 15
+    # hist_2d_axes[(0, 1)].yaxis.labelpad = 12
 
     if fname != None:
         if len(fname.split('.')) == 1:

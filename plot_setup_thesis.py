@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib as mpl 
 
 """
-Set up for a MNRAS paper
+Set up for thesis
 """
 
 def figsize(hscale, 
